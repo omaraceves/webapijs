@@ -1,10 +1,98 @@
-const uri = 'api/todoitems';
+const uri = 'todoitems';
 let todos = [];
 
 async function getItems() {
-    let response = await fetch(url);
-    let data = response.json();
+  try {
+    let response = await fetch(uri);
+    let data = await response.json();
     _displayItems(data);
+  }
+  catch(err) {
+    console.error(err);
+  }
+}
+
+async function addItem() {
+  const addNameTextbox = document.getElementById('add-name');
+
+  const item = {
+    isComplete: false,
+    name: addNameTextbox.value.trim()
+  };
+
+  try {
+    const response = await fetch(uri, {
+      method: 'POST', 
+      headers: { 'Accept': 'application/json',
+                 'Content-Type': 'application/json'},
+      body: JSON.stringify(item)
+    });
+    const data = await response.json();
+    getItems();
+    addNameTextbox.value = '';
+  }
+  catch(error) {
+    console.error('Unable to add item', error);
+  }
+}
+
+function displayEditForm(id) {
+  const item = todos.find(item => item.id === id);
+  
+  document.getElementById('edit-name').value = item.name;
+  document.getElementById('edit-id').value = item.id;
+  document.getElementById('edit-isComplete').checked = item.isComplete;
+  document.getElementById('editForm').style.display = 'block';
+}
+
+async function updateItem() {
+  try {
+      const item = {
+        id: document.getElementById('edit-id').value,
+        name: document.getElementById('edit-name').value,
+        isComplete: document.getElementById('edit-isComplete').checked
+      };
+
+      const response = await fetch(`${uri}/${item.id}`, {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(item)
+      });
+      
+      getItems();
+      closeInput();
+      return false;
+  }
+  catch(err) {
+    console.error('Could not update item', err);
+  }
+}
+
+async function deleteItem (id) {
+  const response = await fetch(`${uri}/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  });
+
+  var data = await response.json();
+
+  getItems();
+}
+
+function _displayCount(itemCount) {
+  const name = (itemCount === 1) ? 'to-do' : 'to-dos';
+
+  document.getElementById('counter').innerText = `${itemCount} ${name}`;
+}
+
+function closeInput() {
+  document.getElementById('editForm').style.display = 'none';
 }
 
 function _displayItems(data) {
