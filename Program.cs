@@ -66,6 +66,32 @@ class TodoDb : DbContext
     public DbSet<Todo> Todos => Set<Todo>();
 }
 
+class ActivationDb : DbContext
+{
+    public ActivationDb(DbContextOptions<ActivationDb> options) : base(options) { }
+
+    public DbSet<Activation> Activations => Set<Activation>();
+}
+
+//This will be stored on the db
+class Activation
+{
+    public int Id { get; set; }
+    public Guid DeviceId { get; set; }
+    public int DeviceTypeId { get; set; }
+    public string DeviceName { get; set; }
+    public Guid UserId { get; set; }
+}
+
+//This will be volatile, probably stored in a cache
+class ActivationCode
+{
+    public Guid DeviceId { get; set; }
+    public int DeviceTypeId { get; set; }
+    public string DeviceName { get; set; }
+    public string Code { get; set; }
+}
+
 class Todo
 {
     public int Id {get;set;}
