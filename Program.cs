@@ -7,6 +7,20 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 var app = builder.Build();
 const string idPath = "/todoitems/{id}";
 
+//POST api/v1/activationCodes
+app.MapPost("/api/v1/activationCodes"), async (ActivationCode activationCodeRequest, ActivationDb db) => 
+{
+    var result = activationCodeRequest;
+    result.Code = CodeGenerator.GetActivationCode();
+
+    db.ActivationCodes.Add(result);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/todoitems/{todoItem.Id}", new TodoDto(todoItem));
+}
+
+
+
 app.MapGet("/todoitems", async (TodoDb db) => 
     await db.Todos.Select(todo => new TodoDto(todo)).ToListAsync());
     
@@ -59,6 +73,14 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 app.Run();
 
+static class CodeGenerator
+{
+    public static string GetActivationCode() 
+    {
+        return "ABCD";
+    }
+}
+
 class TodoDb : DbContext
 {
     public TodoDb(DbContextOptions<TodoDb> options) : base(options) { }
@@ -69,8 +91,8 @@ class TodoDb : DbContext
 class ActivationDb : DbContext
 {
     public ActivationDb(DbContextOptions<ActivationDb> options) : base(options) { }
-
     public DbSet<Activation> Activations => Set<Activation>();
+    public DbSet<ActivationCode> ActivationCodes => Set<ActivationCode>();
 }
 
 //This will be stored on the db
@@ -90,6 +112,14 @@ class ActivationCode
     public int DeviceTypeId { get; set; }
     public string DeviceName { get; set; }
     public string Code { get; set; }
+}
+
+class ActivationCodeRequest
+{
+    public Guid DeviceId { get; set; }
+    public int DeviceTypeId { get; set; }
+    public string DeviceName { get; set; }
+    public bool Refresh { get; set; }
 }
 
 class Todo
