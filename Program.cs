@@ -2,24 +2,28 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
+builder.Services.AddDbContext<ActivationDb>(opt => opt.UseInMemoryDatabase("Activationdb"));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 var app = builder.Build();
 const string idPath = "/todoitems/{id}";
 
 //POST api/v1/activationCodes
-app.MapPost("/api/v1/activationCodes"), async (ActivationCode activationCodeRequest, ActivationDb db) => 
+app.MapPost("/api/v1/activationCodes", async (ActivationCodeRequest activationCodeRequest, ActivationDb db) => 
 {
-    var result = activationCodeRequest;
+    var result = new ActivationCode() {
+        Code = CodeGenerator.GetActivationCode(),
+        DeviceId = activationCodeRequest.DeviceId,
+        DeviceName = activationCodeRequest.DeviceName,
+        DeviceTypeId = activationCodeRequest.DeviceTypeId
+    };  
     result.Code = CodeGenerator.GetActivationCode();
 
     db.ActivationCodes.Add(result);
     await db.SaveChangesAsync();
 
-    return Results.Created($"/todoitems/{todoItem.Id}", new TodoDto(todoItem));
-}
-
-
+    return Results.Created($"api/v1/activationCodes/{result.DeviceTypeId}_{result.DeviceName}_{result.DeviceId}", result);
+});
 
 app.MapGet("/todoitems", async (TodoDb db) => 
     await db.Todos.Select(todo => new TodoDto(todo)).ToListAsync());
@@ -108,6 +112,7 @@ class Activation
 //This will be volatile, probably stored in a cache
 class ActivationCode
 {
+    public int Id { get; set; }
     public Guid DeviceId { get; set; }
     public int DeviceTypeId { get; set; }
     public string DeviceName { get; set; }
