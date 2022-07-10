@@ -11,6 +11,8 @@ const string idPath = "/todoitems/{id}";
 //POST api/v1/activationCodes
 app.MapPost("/api/v1/activationCodes", async (ActivationCodeRequest activationCodeRequest, ActivationDb db) => 
 {
+    //Checks if an activation code exists 
+
     var result = new ActivationCode() {
         Code = CodeGenerator.GetActivationCode(),
         DeviceId = activationCodeRequest.DeviceId,
@@ -24,6 +26,15 @@ app.MapPost("/api/v1/activationCodes", async (ActivationCodeRequest activationCo
 
     return Results.Created($"api/v1/activationCodes/{result.DeviceTypeId}_{result.DeviceName}_{result.DeviceId}", result);
 });
+
+//App Apis
+//Api to get a new code - This Api generates a new code and stores it temporarily. The Api is capable of refresh the code
+//Api to check for subscription - This api will check if DeviceId and DeviceType combination are subscribed.
+
+
+//Web Page Api
+//Api to register the code - When the code is registered a flag will change, allowing the activationCodes api to be able to login into the system
+
 
 app.MapGet("/todoitems", async (TodoDb db) => 
     await db.Todos.Select(todo => new TodoDto(todo)).ToListAsync());
@@ -117,6 +128,8 @@ class ActivationCode
     public int DeviceTypeId { get; set; }
     public string DeviceName { get; set; }
     public string Code { get; set; }
+    public Guid UserId { get; set; }
+    public User User { get; set; }
 }
 
 class ActivationCodeRequest
@@ -125,6 +138,12 @@ class ActivationCodeRequest
     public int DeviceTypeId { get; set; }
     public string DeviceName { get; set; }
     public bool Refresh { get; set; }
+}
+
+class User 
+{
+    public Guid Id { get; set; }
+    public string UserName { get; set; }
 }
 
 class Todo
