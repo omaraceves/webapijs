@@ -30,6 +30,7 @@ app.MapPost("/api/v1/activationCodes", async (ActivationCodeRequest activationCo
 //App Apis
 //Api to get a new code - This Api generates a new code and stores it temporarily. The Api is capable of refresh the code
 //Api to check for subscription - This api will check if DeviceId and DeviceType combination are subscribed.
+//Took some notes on paper
 
 
 //Web Page Api
