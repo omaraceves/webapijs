@@ -8,23 +8,16 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 var app = builder.Build();
 const string idPath = "/todoitems/{id}";
 
-//POST api/v1/activationCodes
-app.MapPost("/api/v1/activationCodes", async (ActivationCodeRequest activationCodeRequest, ActivationDb db) => 
+//POST api/v1/userDeviceCodes
+app.MapPost("/api/v1/userDeviceCodes", async (UserDeviceCodeRequest request, ActivationDb db) => 
 {
-    //Checks if an activation code exists 
-
-    var result = new ActivationCode() {
-        Code = CodeGenerator.GetActivationCode(),
-        DeviceId = activationCodeRequest.DeviceId,
-        DeviceName = activationCodeRequest.DeviceName,
-        DeviceTypeId = activationCodeRequest.DeviceTypeId
-    };  
+    var result = new UserDeviceCode(request);
     result.Code = CodeGenerator.GetActivationCode();
 
-    db.ActivationCodes.Add(result);
+    db.UserDeviceCodes.Add(result);
     await db.SaveChangesAsync();
 
-    return Results.Created($"api/v1/activationCodes/{result.DeviceTypeId}_{result.DeviceName}_{result.DeviceId}", result);
+    return Results.Created($"api/v1/userDeviceCodes/{result.DeviceId}_{result.DeviceType}", result);
 });
 
 //App Apis
@@ -107,38 +100,61 @@ class TodoDb : DbContext
 class ActivationDb : DbContext
 {
     public ActivationDb(DbContextOptions<ActivationDb> options) : base(options) { }
-    public DbSet<Activation> Activations => Set<Activation>();
-    public DbSet<ActivationCode> ActivationCodes => Set<ActivationCode>();
+    public DbSet<UserDeviceCode> UserDeviceCodes => Set<UserDeviceCode>();
+    public DbSet<UserDevice> UserDevices => Set<UserDevice>();
 }
 
-//This will be stored on the db
-class Activation
+
+class UserDeviceCode
 {
     public int Id { get; set; }
     public Guid DeviceId { get; set; }
-    public int DeviceTypeId { get; set; }
-    public string DeviceName { get; set; }
-    public Guid UserId { get; set; }
-}
-
-//This will be volatile, probably stored in a cache
-class ActivationCode
-{
-    public int Id { get; set; }
-    public Guid DeviceId { get; set; }
-    public int DeviceTypeId { get; set; }
-    public string DeviceName { get; set; }
+    public DeviceType DeviceType { get; set; }
     public string Code { get; set; }
-    public Guid UserId { get; set; }
-    public User User { get; set; }
+
+    public UserDeviceCode(UserDeviceCodeRequest source)
+    {
+        DeviceId = source.DeviceId;
+        DeviceType = source.DeviceType;
+    }
 }
 
-class ActivationCodeRequest
+class UserDevice
+{
+    public int Id { get; set; }
+    public Guid DeviceId { get; set; }
+    public DeviceType DeviceType { get; set; }
+    public int UserId { get; set; }
+    public User Users { get; set; }
+}
+
+public enum DeviceType
+{
+    Unknown = -1,
+    NotDefined = 0,
+    AndroidTV,
+    Roku,
+    AppleTV
+}
+
+class UserDeviceCodeRequest
 {
     public Guid DeviceId { get; set; }
-    public int DeviceTypeId { get; set; }
-    public string DeviceName { get; set; }
-    public bool Refresh { get; set; }
+    public DeviceType DeviceType { get; set; }
+}
+
+class UserDeviceCodeResponse
+{
+    public Guid DeviceId { get; set; }
+    public DeviceType DeviceType { get; set; }
+    public string Code { get; set; }
+
+    public UserDeviceCodeResponse(UserDeviceCode source)
+    {
+        DeviceId = source.DeviceId;
+        DeviceType = source.DeviceType;
+        Code = source.Code;
+    }
 }
 
 class User 
