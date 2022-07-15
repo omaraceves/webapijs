@@ -17,7 +17,7 @@ app.MapPost("/api/v1/userDeviceCodes", async (UserDeviceCodeRequest request, Act
     db.UserDeviceCodes.Add(result);
     await db.SaveChangesAsync();
 
-    return Results.Created($"api/v1/userDeviceCodes/{result.DeviceId}_{result.DeviceType}", result);
+    return Results.Created($"api/v1/userDeviceCodes/{result.DeviceId}_{result.DeviceType}_{result.Code}", result);
 });
 
 //App Apis
@@ -110,7 +110,9 @@ class UserDeviceCode
     public int Id { get; set; }
     public Guid DeviceId { get; set; }
     public DeviceType DeviceType { get; set; }
-    public string Code { get; set; }
+    public string? Code { get; set; }
+
+    public UserDeviceCode(){}
 
     public UserDeviceCode(UserDeviceCodeRequest source)
     {
