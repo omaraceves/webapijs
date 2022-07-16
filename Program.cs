@@ -121,6 +121,11 @@ class UserDeviceCode
     }
 }
 
+class MockClass
+{
+    public int Cheat { get; set; }
+}
+
 class UserDevice
 {
     public int Id { get; set; }
