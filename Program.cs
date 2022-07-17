@@ -124,6 +124,7 @@ class UserDeviceCode
 class MockClass
 {
     public int Cheat { get; set; }
+    public int Cheat2 { get; set; }
 }
 
 class UserDevice
