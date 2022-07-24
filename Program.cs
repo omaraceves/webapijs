@@ -86,7 +86,7 @@ static class CodeGenerator
 {
     private static Queue<string> _codeQueue = new Queue<string>();
 
-    public static void Initialize()
+    private static void Initialize()
     {
         _codeQueue.Enqueue("ABCD");
         _codeQueue.Enqueue("XXXX");
@@ -116,6 +116,8 @@ static class CodeGenerator
     
     public static string GetActivationCode() 
     {
+        if(!_codeQueue.Any())
+            Initialize();
    
         if(_codeQueue.TryDequeue(out var result))
             return result;
