@@ -20,6 +20,23 @@ app.MapPost("/api/v1/userDeviceCodes", async (UserDeviceCodeRequest request, Act
     return Results.Created($"api/v1/userDeviceCodes/{result.DeviceId}_{result.DeviceType}_{result.Code}", result);
 });
 
+//POST api/v1/userDevices
+app.MapGet("/api/v1/userDevices", async (Guid deviceId, DeviceType deviceType, ActivationDb db) => 
+{
+    var result = await db.UserDevices
+    .Include(x => x.User)
+    .FirstOrDefaultAsync(x => x.DeviceId == deviceId && x.DeviceType == deviceType);
+
+    if(result != null)
+        return Results.Ok(); //fill up response
+
+    var codeResult = db.UserDeviceCodes.Where(x => x.DeviceId == deviceId && x.DeviceType == deviceType);
+    if(codeResult != null)
+        return Results.Ok(); //fill up response
+
+    return Results.NotFound();
+});
+
 //App Apis
 //Api to get a new code - This Api generates a new code and stores it temporarily. The Api is capable of refresh the code
 //Api to check for subscription - This api will check if DeviceId and DeviceType combination are subscribed.
@@ -162,10 +179,10 @@ class UserDeviceCode
     }
 }
 
-class MockClass
+class User 
 {
-    public int Cheat { get; set; }
-    public int Cheat2 { get; set; }
+    public Guid Id { get; set; }
+    public string UserName { get; set; }
 }
 
 class UserDevice
@@ -174,7 +191,7 @@ class UserDevice
     public Guid DeviceId { get; set; }
     public DeviceType DeviceType { get; set; }
     public int UserId { get; set; }
-    public User Users { get; set; }
+    public User User { get; set; }
 }
 
 public enum DeviceType
@@ -204,12 +221,6 @@ class UserDeviceCodeResponse
         DeviceType = source.DeviceType;
         Code = source.Code;
     }
-}
-
-class User 
-{
-    public Guid Id { get; set; }
-    public string UserName { get; set; }
 }
 
 class Todo
