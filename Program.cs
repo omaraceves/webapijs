@@ -24,14 +24,13 @@ app.MapGet("/api/v1/userDevices", async (Guid deviceId, DeviceType deviceType, A
     }
     else if(result.User != null)
     {
-        //complete this part
-        //create response with user
+        var response = new UserDeviceResponse(result, result.User);
     }
     else if(result.Code != null)
     {
         //complete this part
         //create response with code
-    }    
+    }
 });
 
 
