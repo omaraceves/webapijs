@@ -10,7 +10,8 @@ const string idPath = "/todoitems/{id}";
 
 //POST api/v1/userDevices
 app.MapGet("/api/v1/userDevices", async (Guid deviceId, DeviceType deviceType, ActivationDb db) => 
-{
+{   
+    UserDeviceResponse response;
     var result = await db.UserDevices
     .Include(x => x.User)
     .Include(x => x.Code)
@@ -24,12 +25,13 @@ app.MapGet("/api/v1/userDevices", async (Guid deviceId, DeviceType deviceType, A
     }
     else if(result.User != null)
     {
-        var response = new UserDeviceResponse(result, result.User);
+        response = new UserDeviceResponse(result, result.User);
+        return Results.Ok(response);
     }
     else if(result.Code != null)
     {
-        //complete this part
-        //create response with code
+        response = new UserDeviceResponse(result, result.Code);
+        return Results.Ok(response);
     }
 });
 

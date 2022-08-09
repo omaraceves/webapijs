@@ -1,4 +1,4 @@
-class UserDevice
+public class UserDevice
 {
     public Guid Id { get; set; }
     public Guid DeviceId { get; set; }
@@ -9,7 +9,7 @@ class UserDevice
     public User User { get; set; }
 }
 
-class UserDeviceCode
+public class UserDeviceCode
 {
     public Guid UserDeviceId { get; set; }
     public string Code { get; set; }
