@@ -8,7 +8,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 var app = builder.Build();
 const string idPath = "/todoitems/{id}";
 
-//POST api/v1/userDevices
+//GET api/v1/userDevices
 app.MapGet("/api/v1/userDevices", async (Guid deviceId, DeviceType deviceType, ActivationDb db) => 
 {   
     UserDeviceResponse response;
@@ -17,7 +17,6 @@ app.MapGet("/api/v1/userDevices", async (Guid deviceId, DeviceType deviceType, A
     .Include(x => x.Code)
     .FirstOrDefaultAsync(x => x.DeviceId == deviceId 
                             && x.DeviceType == deviceType);
-
 
     if(result == null)
     {
@@ -33,6 +32,8 @@ app.MapGet("/api/v1/userDevices", async (Guid deviceId, DeviceType deviceType, A
         response = new UserDeviceResponse(result, result.Code);
         return Results.Ok(response);
     }
+
+    return Results.NotFound();
 });
 
 
