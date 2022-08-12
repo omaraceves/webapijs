@@ -47,6 +47,8 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, ActivationDb
                             && x.DeviceType == request.DeviceType);
 
     //What to do when resource already exists? Conflict 409 code.
+    if (result != null)
+        return Results.Conflict(new UserDeviceResponse(result));
 
 });
 

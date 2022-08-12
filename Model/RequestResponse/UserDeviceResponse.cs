@@ -14,6 +14,13 @@ public class UserDeviceResponse
 
     }
 
+     public UserDeviceResponse(UserDevice userDevice)
+    {
+        Id = userDevice.Id;
+        DeviceId = userDevice.DeviceId;
+        DeviceType = userDevice.DeviceType;
+    }
+
     public UserDeviceResponse(UserDevice userDevice, User user)
     {
         Id = userDevice.Id;
