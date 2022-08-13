@@ -50,6 +50,8 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, ActivationDb
     if (result != null)
         return Results.Conflict(new UserDeviceResponse(result));
 
+    //create userDeviceCode
+
 });
 
 
