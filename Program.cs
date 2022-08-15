@@ -50,8 +50,11 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, ActivationDb
     if (result != null)
         return Results.Conflict(new UserDeviceResponse(result));
 
-    //create userDeviceCode
-    //create userDeviceCode
+    //To create a userDevice, first we need a new code.
+    var code = CodeGenerator.GetActivationCode();
+    var userDevice = new UserDevice(request.DeviceId, request.DeviceType, code);
+
+    //Add logic to expiration date on get
 
 });
 
