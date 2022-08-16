@@ -54,7 +54,11 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, ActivationDb
     var code = CodeGenerator.GetActivationCode();
     var userDevice = new UserDevice(request.DeviceId, request.DeviceType, code);
 
-    //Add logic to expiration date on get
+    db.UserDevices.Add(userDevice);
+    response = new UserDeviceResponse(userDevice);
+
+    //todo: add uri
+    return Results.Created("", response);
 
 });
 
