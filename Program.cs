@@ -8,7 +8,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 var app = builder.Build();
 const string idPath = "/todoitems/{id}";
 
-//GET api/v1/userDevices
+//todo fix GET add id to route.
+//GET api/v1/userDevices/
 app.MapGet("/api/v1/userDevices", async (Guid deviceId, DeviceType deviceType, ActivationDb db) => 
 {   
     UserDeviceResponse response;
@@ -58,8 +59,8 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, ActivationDb
     response = new UserDeviceResponse(userDevice);
 
     //todo: add uri
-    return Results.Created("", response);
-
+    return Results.Created($"api/v1/userDevices?deviceId={request.DeviceId}&deviceType={request.DeviceType}", 
+    response);
 });
 
 
