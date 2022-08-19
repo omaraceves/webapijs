@@ -8,8 +8,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 var app = builder.Build();
 const string idPath = "/todoitems/{id}";
 
-//todo fix GET add id to route.
-//GET api/v1/userDevices/
+//GET api/v1/userDevices/{deviceId}/{deviceType}
 app.MapGet("/api/v1/userDevices/{deviceId}/{deviceType}", async (Guid deviceId, DeviceType deviceType, ActivationDb db) => 
 {   
     UserDeviceResponse response;
@@ -63,7 +62,20 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, ActivationDb
     response);
 });
 
+//PUT api/v1/userDevices/{deviceId}/{deviceType}
+app.MapPut("/api/v1/userDevices/{deviceId}/{deviceType}", async (Guid deviceId, DeviceType deviceType, UserDeviceRequest request, ActivationDb db) => 
+{
+    var result = await db.UserDevices
+    .Include(x => x.User)
+    .Include(x => x.Code)
+    .FirstOrDefaultAsync(x => x.DeviceId == request.DeviceId 
+                            && x.DeviceType == request.DeviceType);
 
+    if (result == null)
+        return Results.NotFound();
+
+    //what if found?
+});
 
 //App Apis
 //Api to get a new code - This Api generates a new code and stores it temporarily. The Api is capable of refresh the code
