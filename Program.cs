@@ -57,13 +57,13 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, ActivationDb
     db.UserDevices.Add(userDevice);
     response = new UserDeviceResponse(userDevice);
 
-    //todo: add uri
     return Results.Created($"api/v1/userDevices?deviceId={request.DeviceId}&deviceType={request.DeviceType}", 
     response);
 });
 
 //PUT api/v1/userDevices/{deviceId}/{deviceType}
-app.MapPut("/api/v1/userDevices/{deviceId}/{deviceType}", async (Guid deviceId, DeviceType deviceType, UserDeviceRequest request, ActivationDb db) => 
+app.MapPut("/api/v1/userDevices/{deviceId}/{deviceType}", async (
+    Guid deviceId, DeviceType deviceType, UserDeviceRequest request, ActivationDb db) => 
 {
     var result = await db.UserDevices
     .Include(x => x.User)
@@ -73,19 +73,19 @@ app.MapPut("/api/v1/userDevices/{deviceId}/{deviceType}", async (Guid deviceId, 
 
     if (result == null)
         return Results.NotFound();
+    
+    //refresh code
+    var oldCode = result.Code.Code;
+    var code = CodeGenerator.GetActivationCode();
+    result.Code.Code = code;
+    result.Code.ExpirationDate = TimeHelper.GetExpirationDate();
+    db.UserDevices.Update(result);
 
-    //what if found?
+    //recycle code
+    CodeGenerator.PushCode(oldCode);
+
+    return Results.NoContent();
 });
-
-//App Apis
-//Api to get a new code - This Api generates a new code and stores it temporarily. The Api is capable of refresh the code
-//Api to check for subscription - This api will check if DeviceId and DeviceType combination are subscribed.
-//Took some notes on paper
-
-
-//Web Page Api
-//Api to register the code - When the code is registered a flag will change, allowing the activationCodes api to be able to login into the system
-
 
 #region TodoItems apis
 app.MapGet("/todoitems", async (TodoDb db) => 
