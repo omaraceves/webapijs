@@ -87,6 +87,33 @@ app.MapPut("/api/v1/userDevices/{deviceId}/{deviceType}", async (
     return Results.NoContent();
 });
 
+//POST api/v1/userDevices/register
+app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest request, ActivationDb db) => {
+    UserDeviceResponse response;
+
+    var result = await db.UserDevices
+    .Include(x => x.User)
+    .Include(x => x.Code)
+    .FirstOrDefaultAsync(x => x.Code.Code == request.Code);
+
+    //What to do when resource already exists? Conflict 409 code.
+    if (result == null)
+        return Results.NotFound();
+
+    //Update User Device
+    result.Code.ExpirationDate = TimeHelper.GetUnixTime(); //Expire code now.
+    result.UserId = request.UserId;
+    db.UserDevices.Update(result);
+
+    //recycle code
+    CodeGenerator.PushCode(result.Code.Code);
+
+    //todo fix this
+    //todo api to recycle all the codes.
+    return Results.Created($"api/v1/userDevices?deviceId={request.DeviceId}&deviceType={request.DeviceType}", 
+    response);
+});
+
 #region TodoItems apis
 app.MapGet("/todoitems", async (TodoDb db) => 
     await db.Todos.Select(todo => new TodoDto(todo)).ToListAsync());
