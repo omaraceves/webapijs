@@ -110,8 +110,7 @@ app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest requ
 
     //todo fix this
     //todo api to recycle all the codes.
-    return Results.Created($"api/v1/userDevices?deviceId={request.DeviceId}&deviceType={request.DeviceType}", 
-    response);
+    return Results.Ok(result);
 });
 
 #region TodoItems apis
