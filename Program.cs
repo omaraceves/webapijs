@@ -89,8 +89,6 @@ app.MapPut("/api/v1/userDevices/{deviceId}/{deviceType}", async (
 
 //POST api/v1/userDevices/register
 app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest request, ActivationDb db) => {
-    UserDeviceResponse response;
-
     var result = await db.UserDevices
     .Include(x => x.User)
     .Include(x => x.Code)
@@ -109,8 +107,12 @@ app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest requ
     CodeGenerator.PushCode(result.Code.Code);
 
     //todo fix this
-    //todo api to recycle all the codes.
-    return Results.Ok(result);
+    return Results.Ok(new UserDeviceResponse(result));
+});
+
+//POST api/v1/codes/recycle
+app.MapGet("api/v1/codes/recycle", async(ActivationDb db) => {
+    //todo
 });
 
 #region TodoItems apis
