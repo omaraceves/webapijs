@@ -112,8 +112,16 @@ app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest requ
 
 //POST api/v1/codes/recycle
 app.MapGet("api/v1/codes/recycle", async(ActivationDb db) => {
-    //todo
-});
+    //select expired
+    var expiredCodes = db.UserDeviceCodes.Where(x => x.ExpirationDate <= TimeHelper.GetUnixTime()).ToList();
+
+    expiredCodes.ForEach(x => {
+        var code = x.Code;
+        CodeGenerator.PushCode(code);
+    });
+
+    return Results.Ok($"{expiredCodes.Count} codes recycled");
+}); //todo add filter for expired codes.
 
 #region TodoItems apis
 app.MapGet("/todoitems", async (TodoDb db) => 
