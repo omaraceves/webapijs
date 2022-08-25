@@ -1,15 +1,16 @@
 using Microsoft.EntityFrameworkCore;
+using UserDeviceContext;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
-builder.Services.AddDbContext<ActivationDb>(opt => opt.UseInMemoryDatabase("Activationdb"));
+builder.Services.AddDbContext<UserDevicesDB>(opt => opt.UseInMemoryDatabase("Activationdb"));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 var app = builder.Build();
 const string idPath = "/todoitems/{id}";
 
 //GET api/v1/userDevices/{deviceId}/{deviceType}
-app.MapGet("/api/v1/userDevices/{deviceId}/{deviceType}", async (Guid deviceId, DeviceType deviceType, ActivationDb db) => 
+app.MapGet("/api/v1/userDevices/{deviceId}/{deviceType}", async (Guid deviceId, DeviceType deviceType, UserDevicesDB db) => 
 {   
     UserDeviceResponse response;
     var result = await db.UserDevices
@@ -37,7 +38,7 @@ app.MapGet("/api/v1/userDevices/{deviceId}/{deviceType}", async (Guid deviceId, 
 });
 
 //POST api/v1/userDevices
-app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, ActivationDb db) => {
+app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDevicesDB db) => {
     UserDeviceResponse response;
 
     var result = await db.UserDevices
@@ -63,7 +64,7 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, ActivationDb
 
 //PUT api/v1/userDevices/{deviceId}/{deviceType}
 app.MapPut("/api/v1/userDevices/{deviceId}/{deviceType}", async (
-    Guid deviceId, DeviceType deviceType, UserDeviceRequest request, ActivationDb db) => 
+    Guid deviceId, DeviceType deviceType, UserDeviceRequest request, UserDevicesDB db) => 
 {
     var result = await db.UserDevices
     .Include(x => x.User)
@@ -88,7 +89,7 @@ app.MapPut("/api/v1/userDevices/{deviceId}/{deviceType}", async (
 });
 
 //POST api/v1/userDevices/register
-app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest request, ActivationDb db) => {
+app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest request, UserDevicesDB db) => {
     var result = await db.UserDevices
     .Include(x => x.User)
     .Include(x => x.Code)
@@ -111,7 +112,7 @@ app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest requ
 });
 
 //POST api/v1/codes/recycle
-app.MapGet("api/v1/codes/recycle", async(ActivationDb db) => {
+app.MapGet("api/v1/codes/recycle", async(UserDevicesDB db) => {
     //select expired
     var expiredCodes = db.UserDeviceCodes.Where(x => x.ExpirationDate <= TimeHelper.GetUnixTime()).ToList();
 

@@ -1,8 +1,10 @@
-
-public class UserDeviceRequest
+namespace UserDeviceApi.Model.RequestResponse
 {
-    public Guid DeviceId { get; set; }
-    public DeviceType DeviceType { get; set; }
+    public class UserDeviceRequest
+    {
+        public Guid DeviceId { get; set; }
+        public DeviceType DeviceType { get; set; }
 
-    
+
+    }
 }

@@ -1,19 +1,23 @@
 
-public static class TimeHelper 
+namespace UserDeviceApi.Helper
 {
-    public static long GetUnixTime()
+    public static class TimeHelper
     {
-        TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
-        long secondsSinceEpoch = (int)t.TotalSeconds;
+        public static long GetUnixTime()
+        {
+            TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
+            long secondsSinceEpoch = (int)t.TotalSeconds;
 
-        return secondsSinceEpoch;
-    }
+            return secondsSinceEpoch;
+        }
 
-    public static long GetExpirationDate()
-    {
-        var now = GetUnixTime();
-        var expirationDate = now += 3600;
+        public static long GetExpirationDate()
+        {
+            var now = GetUnixTime();
+            var expirationDate = now += 3600;
 
-        return expirationDate;
+            return expirationDate;
+        }
     }
 }
+   
