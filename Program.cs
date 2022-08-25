@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using UserDeviceContext;
+using UserDeviceApi.Context;
+using UserDeviceApi.Helper;
+using UserDeviceApi.Model;
+using UserDeviceApi.Model.RequestResponse;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));

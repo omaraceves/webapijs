@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using UserDeviceApi.Model;
 
 namespace UserDeviceApi.Context
 {
