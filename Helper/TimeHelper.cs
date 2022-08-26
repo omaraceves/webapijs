@@ -1,5 +1,5 @@
 
-namespace UserDeviceApi.Helper
+namespace UserDeviceApi.Helpers
 {
     public static class TimeHelper
     {

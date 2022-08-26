@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UserDeviceApi.Context;
-using UserDeviceApi.Helper;
+using UserDeviceApi.Helpers;
 using UserDeviceApi.Model;
 using UserDeviceApi.Model.RequestResponse;
 
@@ -117,7 +117,7 @@ app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest requ
 //POST api/v1/codes/recycle
 app.MapGet("api/v1/codes/recycle", async(UserDevicesDB db) => {
     //select expired
-    var expiredCodes = db.UserDeviceCodes.Where(x => x.ExpirationDate <= TimeHelper.GetUnixTime()).ToList();
+    var expiredCodes = await db.UserDeviceCodes.Where(x => x.ExpirationDate <= TimeHelper.GetUnixTime()).ToListAsync();
 
     expiredCodes.ForEach(x => {
         var code = x.Code;

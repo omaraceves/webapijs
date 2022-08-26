@@ -3,7 +3,7 @@ using UserDeviceApi.Model;
 
 namespace UserDeviceApi.Context
 {
-    class UserDevicesDB : DbContext
+    public class UserDevicesDB : DbContext
     {
         public UserDevicesDB(DbContextOptions<UserDevicesDB> options) : base(options) { }
         public DbSet<UserDeviceCode> UserDeviceCodes => Set<UserDeviceCode>();

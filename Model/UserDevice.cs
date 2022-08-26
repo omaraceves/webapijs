@@ -1,4 +1,4 @@
-using UserDeviceApi.Helper;
+using UserDeviceApi.Helpers;
 
 namespace UserDeviceApi.Model
 {

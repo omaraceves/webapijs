@@ -1,4 +1,4 @@
-namespace UserDeviceApi.Helper
+namespace UserDeviceApi.Helpers
 {
     static class CodeGenerator
     {
