@@ -3,22 +3,23 @@ using UserDeviceApi.Context;
 using UserDeviceApi.Helpers;
 using UserDeviceApi.Model;
 using UserDeviceApi.Model.RequestResponse;
+using UserDeviceApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
 builder.Services.AddDbContext<UserDevicesDB>(opt => opt.UseInMemoryDatabase("Activationdb"));
+builder.Services.AddTransient<UserDeviceService>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 var app = builder.Build();
 const string idPath = "/todoitems/{id}";
 
 //GET api/v1/userDevices/{deviceId}/{deviceType}
-app.MapGet("/api/v1/userDevices/{deviceId}/{deviceType}", async (Guid deviceId, DeviceType deviceType, UserDevicesDB db) => 
+app.MapGet("/api/v1/userDevices/{deviceId}/{deviceType}", async (Guid deviceId, DeviceType deviceType, UserDevicesDB db, 
+    UserDeviceService service) => 
 {   
     UserDeviceResponse response;
-    var result = await db.UserDevices
-    .Include(x => x.User)
-    .Include(x => x.Code)
+    var result = await service.GetUserDevices()
     .FirstOrDefaultAsync(x => x.DeviceId == deviceId 
                             && x.DeviceType == deviceType);
 
