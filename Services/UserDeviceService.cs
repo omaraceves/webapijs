@@ -24,5 +24,11 @@ namespace UserDeviceApi.Services
 
             return result;
         }
+
+        public async Task<UserDevice> AddAsync(UserDevice userDevice)
+        {
+            var result = await _context.UserDevices.AddAsync(userDevice);
+            return result.Entity;
+        }
     }
 }

@@ -15,7 +15,7 @@ var app = builder.Build();
 const string idPath = "/todoitems/{id}";
 
 //GET api/v1/userDevices/{deviceId}/{deviceType}
-app.MapGet("/api/v1/userDevices/{deviceId}/{deviceType}", async (Guid deviceId, DeviceType deviceType, UserDevicesDB db, 
+app.MapGet("/api/v1/userDevices/{deviceId}/{deviceType}", async (Guid deviceId, DeviceType deviceType, 
     UserDeviceService service) => 
 {   
     UserDeviceResponse response;
@@ -42,12 +42,10 @@ app.MapGet("/api/v1/userDevices/{deviceId}/{deviceType}", async (Guid deviceId, 
 });
 
 //POST api/v1/userDevices
-app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDevicesDB db) => {
+app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDeviceService service) => {
     UserDeviceResponse response;
 
-    var result = await db.UserDevices
-    .Include(x => x.User)
-    .Include(x => x.Code)
+    var result = await service.GetUserDevices()
     .FirstOrDefaultAsync(x => x.DeviceId == request.DeviceId 
                             && x.DeviceType == request.DeviceType);
 
@@ -59,7 +57,7 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDevicesD
     var code = CodeGenerator.GetActivationCode();
     var userDevice = new UserDevice(request.DeviceId, request.DeviceType, code);
 
-    db.UserDevices.Add(userDevice);
+    await service.AddAsync(userDevice);
     response = new UserDeviceResponse(userDevice);
 
     return Results.Created($"api/v1/userDevices?deviceId={request.DeviceId}&deviceType={request.DeviceType}", 
