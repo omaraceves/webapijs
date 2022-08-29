@@ -30,5 +30,11 @@ namespace UserDeviceApi.Services
             var result = await _context.UserDevices.AddAsync(userDevice);
             return result.Entity;
         }
+
+        public UserDevice Update(UserDevice userDevice)
+        {
+            var result = _context.UserDevices.Update(userDevice);
+            return result.Entity;
+        }
     }
 }

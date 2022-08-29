@@ -66,11 +66,9 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDeviceSe
 
 //PUT api/v1/userDevices/{deviceId}/{deviceType}
 app.MapPut("/api/v1/userDevices/{deviceId}/{deviceType}", async (
-    Guid deviceId, DeviceType deviceType, UserDeviceRequest request, UserDevicesDB db) => 
+    Guid deviceId, DeviceType deviceType, UserDeviceRequest request, UserDeviceService service) => 
 {
-    var result = await db.UserDevices
-    .Include(x => x.User)
-    .Include(x => x.Code)
+    var result = await service.GetUserDevices()
     .FirstOrDefaultAsync(x => x.DeviceId == request.DeviceId 
                             && x.DeviceType == request.DeviceType);
 
@@ -82,7 +80,7 @@ app.MapPut("/api/v1/userDevices/{deviceId}/{deviceType}", async (
     var code = CodeGenerator.GetActivationCode();
     result.Code.Code = code;
     result.Code.ExpirationDate = TimeHelper.GetExpirationDate();
-    db.UserDevices.Update(result);
+    service.Update(result);
 
     //recycle code
     CodeGenerator.PushCode(oldCode);
@@ -91,10 +89,9 @@ app.MapPut("/api/v1/userDevices/{deviceId}/{deviceType}", async (
 });
 
 //POST api/v1/userDevices/register
-app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest request, UserDevicesDB db) => {
-    var result = await db.UserDevices
-    .Include(x => x.User)
-    .Include(x => x.Code)
+app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest request, UserDeviceService service) => {
+    
+    var result = await service.GetUserDevices()
     .FirstOrDefaultAsync(x => x.Code.Code == request.Code);
 
     //What to do when resource already exists? Conflict 409 code.
@@ -104,7 +101,7 @@ app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest requ
     //Update User Device
     result.Code.ExpirationDate = TimeHelper.GetUnixTime(); //Expire code now.
     result.UserId = request.UserId;
-    db.UserDevices.Update(result);
+    service.Update(result);
 
     //recycle code
     CodeGenerator.PushCode(result.Code.Code);
@@ -113,6 +110,7 @@ app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest requ
     return Results.Ok(new UserDeviceResponse(result));
 });
 
+//todo refactor this method
 //POST api/v1/codes/recycle
 app.MapGet("api/v1/codes/recycle", async(UserDevicesDB db) => {
     //select expired
