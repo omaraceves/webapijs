@@ -110,11 +110,10 @@ app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest requ
     return Results.Ok(new UserDeviceResponse(result));
 });
 
-//todo refactor this method
 //POST api/v1/codes/recycle
-app.MapGet("api/v1/codes/recycle", async(UserDevicesDB db) => {
+app.MapGet("api/v1/codes/recycle", async(UserDeviceCodeService service) => {
     //select expired
-    var expiredCodes = await db.UserDeviceCodes.Where(x => x.ExpirationDate <= TimeHelper.GetUnixTime()).ToListAsync();
+    var expiredCodes = await service.GetUserDeviceCodes().Where(x => x.ExpirationDate <= TimeHelper.GetUnixTime()).ToListAsync();
 
     expiredCodes.ForEach(x => {
         var code = x.Code;
