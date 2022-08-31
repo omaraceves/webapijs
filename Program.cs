@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
 builder.Services.AddDbContext<UserDevicesDB>(opt => opt.UseInMemoryDatabase("Activationdb"));
 builder.Services.AddTransient<UserDeviceService>();
+builder.Services.AddTransient<UserDeviceCodeService>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 var app = builder.Build();
@@ -106,12 +107,11 @@ app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest requ
     //recycle code
     CodeGenerator.PushCode(result.Code.Code);
 
-    //todo fix this
     return Results.Ok(new UserDeviceResponse(result));
 });
 
 //POST api/v1/codes/recycle
-app.MapGet("api/v1/codes/recycle", async(UserDeviceCodeService service) => {
+app.MapGet("api/v1/codes/recycle", async(int algo, UserDeviceCodeService service) => {
     //select expired
     var expiredCodes = await service.GetUserDeviceCodes().Where(x => x.ExpirationDate <= TimeHelper.GetUnixTime()).ToListAsync();
 
@@ -121,7 +121,7 @@ app.MapGet("api/v1/codes/recycle", async(UserDeviceCodeService service) => {
     });
 
     return Results.Ok($"{expiredCodes.Count} codes recycled");
-}); //todo add filter for expired codes.
+}); 
 
 #region TodoItems apis
 app.MapGet("/todoitems", async (TodoDb db) => 
