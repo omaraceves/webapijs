@@ -33,9 +33,9 @@ app.MapGet("/api/v1/userDevices/{deviceId}/{deviceType}", async (Guid deviceId, 
         response = new UserDeviceResponse(result, result.User);
         return Results.Ok(response);
     }
-    else if(result.Code != null)
+    else if(result.UserDeviceCode != null)
     {
-        response = new UserDeviceResponse(result, result.Code);
+        response = new UserDeviceResponse(result, result.UserDeviceCode);
         return Results.Ok(response);
     }
 
@@ -77,10 +77,10 @@ app.MapPut("/api/v1/userDevices/{deviceId}/{deviceType}", async (
         return Results.NotFound();
     
     //refresh code
-    var oldCode = result.Code.Code;
+    var oldCode = result.UserDeviceCode.Code;
     var code = CodeGenerator.GetActivationCode();
-    result.Code.Code = code;
-    result.Code.ExpirationDate = TimeHelper.GetExpirationDate();
+    result.UserDeviceCode.Code = code;
+    result.UserDeviceCode.ExpirationDate = TimeHelper.GetExpirationDate();
     service.Update(result);
 
     //recycle code
@@ -93,19 +93,19 @@ app.MapPut("/api/v1/userDevices/{deviceId}/{deviceType}", async (
 app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest request, UserDeviceService service) => {
     
     var result = await service.GetUserDevices()
-    .FirstOrDefaultAsync(x => x.Code.Code == request.Code);
+    .FirstOrDefaultAsync(x => x.UserDeviceCode.Code == request.Code);
 
     //What to do when resource already exists? Conflict 409 code.
     if (result == null)
         return Results.NotFound();
 
     //Update User Device
-    result.Code.ExpirationDate = TimeHelper.GetUnixTime(); //Expire code now.
+    result.UserDeviceCode.ExpirationDate = TimeHelper.GetUnixTime(); //Expire code now.
     result.UserId = request.UserId;
     service.Update(result);
 
     //recycle code
-    CodeGenerator.PushCode(result.Code.Code);
+    CodeGenerator.PushCode(result.UserDeviceCode.Code);
 
     return Results.Ok(new UserDeviceResponse(result));
 });
