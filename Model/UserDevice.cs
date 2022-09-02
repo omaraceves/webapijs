@@ -27,6 +27,7 @@ namespace UserDeviceApi.Model
 
     public class UserDeviceCode
     {
+        public Guid Id { get; set; }
         public Guid UserDeviceId { get; set; }
         public string Code { get; set; }
         public long ExpirationDate { get; set; }
