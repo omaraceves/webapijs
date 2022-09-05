@@ -32,6 +32,7 @@ namespace UserDeviceApi.Helpers
             _codeQueue.Enqueue("HJIO");
             _codeQueue.Enqueue("ZZZZ");
             _codeQueue.Enqueue("YYYY");
+            _codeQueue.Enqueue("YYYZ");
         }
 
         public static string GetActivationCode()
