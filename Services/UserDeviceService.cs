@@ -28,13 +28,21 @@ namespace UserDeviceApi.Services
         public async Task<UserDevice> AddAsync(UserDevice userDevice)
         {
             var result = await _context.UserDevices.AddAsync(userDevice);
+            await _context.SaveChangesAsync();
             return result.Entity;
         }
 
         public UserDevice Update(UserDevice userDevice)
         {
             var result = _context.UserDevices.Update(userDevice);
+            _context.SaveChanges();
             return result.Entity;
+        }
+
+        public async Task BulkAddAsync(List<UserDevice> userDevices)
+        {
+            await _context.UserDevices.AddRangeAsync(userDevices);
+            await _context.SaveChangesAsync();
         }
     }
 }

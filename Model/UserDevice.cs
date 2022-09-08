@@ -32,6 +32,11 @@ namespace UserDeviceApi.Model
         public string Code { get; set; }
         public long ExpirationDate { get; set; }
 
+        public UserDeviceCode()
+        {
+            
+        }
+
         public UserDeviceCode(string code)
         {
             Code = code;

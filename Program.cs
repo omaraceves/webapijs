@@ -15,8 +15,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 var app = builder.Build();
 const string idPath = "/todoitems/{id}";
 
-//GET api/v1/userDevices/{deviceId}/{deviceType}
-app.MapGet("/api/v1/userDevices/{deviceId}/{deviceType}", async (Guid deviceId, DeviceType deviceType, 
+//GET api/v1/userDevices/{deviceType}/{deviceId}
+app.MapGet("/api/v1/userDevices/{deviceType}/{deviceId}", async (Guid deviceId, DeviceType deviceType, 
     UserDeviceService service) => 
 {   
     UserDeviceResponse response;
@@ -65,8 +65,8 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDeviceSe
     response);
 });
 
-//PUT api/v1/userDevices/{deviceId}/{deviceType}
-app.MapPut("/api/v1/userDevices/{deviceId}/{deviceType}", async (
+//PUT api/v1/userDevices/{deviceType}/{deviceId}
+app.MapPut("/api/v1/userDevices/{deviceType}/{deviceId}", async (
     Guid deviceId, DeviceType deviceType, UserDeviceRequest request, UserDeviceService service) => 
 {
     var result = await service.GetUserDevices()
@@ -110,8 +110,8 @@ app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest requ
     return Results.Ok(new UserDeviceResponse(result));
 });
 
-//POST api/v1/codes/recycle
-app.MapGet("api/v1/codes/recycle", async(int algo, UserDeviceCodeService service) => {
+//GET api/v1/codes/recycle
+app.MapGet("api/v1/codes/recycle", async(UserDeviceCodeService service) => {
     //select expired
     var expiredCodes = await service.GetUserDeviceCodes().Where(x => x.ExpirationDate <= TimeHelper.GetUnixTime()).ToListAsync();
 
@@ -121,7 +121,44 @@ app.MapGet("api/v1/codes/recycle", async(int algo, UserDeviceCodeService service
     });
 
     return Results.Ok($"{expiredCodes.Count} codes recycled");
-}); 
+});
+
+//GET api/v1/codes/seed
+app.MapGet("api/v1/codes/seed", async(UserDeviceService service) => {
+    
+    var userDevicesToAdd = new List<UserDevice>() {
+        new UserDevice() {
+            DeviceId = Guid.Parse("01b1e96d-4bb8-4793-b9fa-d29fa1d20b10"),
+            DeviceType = DeviceType.AppleTV,
+            UserDeviceCode = new UserDeviceCode() {
+                Code = CodeGenerator.GetActivationCode(),
+                ExpirationDate = TimeHelper.GetExpirationDate(),
+                Id = Guid.Parse("ddc990b4-d7a7-4976-a3d5-71d47f96d2af")
+            }
+        },
+        new UserDevice() {
+            DeviceId = Guid.Parse("4f931e15-3ad8-4a11-a1c9-67d45546d95d"),
+            DeviceType = DeviceType.AppleTV,
+            UserDeviceCode = new UserDeviceCode() {
+                Code = CodeGenerator.GetActivationCode(),
+                ExpirationDate = TimeHelper.GetExpirationDate(),
+                Id = Guid.Parse("069847f7-cb49-46cb-927b-517e744bacd9")
+            }
+        },
+        new UserDevice() {
+            DeviceId = Guid.Parse("c405c882-8c09-466a-9cc8-062b5467faf6"),
+            DeviceType = DeviceType.AppleTV,
+            UserDeviceCode = new UserDeviceCode() {
+                Code = CodeGenerator.GetActivationCode(),
+                ExpirationDate = TimeHelper.GetExpirationDate(),
+                Id = Guid.Parse("b877b9d1-0227-407f-911d-7f6c50bf412b")
+            }
+        }
+    };
+
+    await service.BulkAddAsync(userDevicesToAdd);
+    return Results.Ok();
+});
 
 #region TodoItems apis
 app.MapGet("/todoitems", async (TodoDb db) => 
