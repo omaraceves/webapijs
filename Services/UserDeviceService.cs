@@ -25,6 +25,14 @@ namespace UserDeviceApi.Services
             return result;
         }
 
+        public IQueryable<UserDevice> GetAll()
+        {
+            var result = _context.UserDevices
+                .AsQueryable();
+
+            return result;
+        }
+
         public async Task<UserDevice> AddAsync(UserDevice userDevice)
         {
             var result = await _context.UserDevices.AddAsync(userDevice);
@@ -39,10 +47,10 @@ namespace UserDeviceApi.Services
             return result.Entity;
         }
 
-        public async Task BulkAddAsync(List<UserDevice> userDevices)
+        public void BulkAddAsync(List<UserDevice> userDevices)
         {
-            await _context.UserDevices.AddRangeAsync(userDevices);
-            await _context.SaveChangesAsync();
+            _context.UserDevices.AddRange(userDevices);
+            _context.SaveChanges();
         }
     }
 }

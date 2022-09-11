@@ -42,6 +42,20 @@ app.MapGet("/api/v1/userDevices/{deviceType}/{deviceId}", async (Guid deviceId, 
     return Results.NotFound();
 });
 
+//GET api/v1/userDevices
+app.MapGet("/api/v1/userDevices", async (UserDeviceService service) =>
+{
+    UserDeviceResponse response;
+    var result = await service.GetAll().ToListAsync();
+    
+    if (result == null || result.Count == 0)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(result);
+});
+
 //POST api/v1/userDevices
 app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDeviceService service) => {
     UserDeviceResponse response;
@@ -156,8 +170,10 @@ app.MapGet("api/v1/codes/seed", async(UserDeviceService service) => {
         }
     };
 
-    await service.BulkAddAsync(userDevicesToAdd);
-    return Results.Ok();
+    service.BulkAddAsync(userDevicesToAdd);
+
+    var results = service.GetAll().ToList();
+    return Results.Ok(results);
 });
 
 #region TodoItems apis
