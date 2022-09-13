@@ -46,7 +46,7 @@ app.MapGet("/api/v1/userDevices/{deviceType}/{deviceId}", async (Guid deviceId, 
 app.MapGet("/api/v1/userDevices", async (UserDeviceService service) =>
 {
     UserDeviceResponse response;
-    var result = await service.GetAll().ToListAsync();
+    var result = await service.GetUserDevices().ToListAsync();
     
     if (result == null || result.Count == 0)
     {
@@ -142,31 +142,40 @@ app.MapGet("api/v1/codes/seed", async(UserDeviceService service) => {
     
     var userDevicesToAdd = new List<UserDevice>() {
         new UserDevice() {
+            Id = Guid.Parse("01b1e96d-4bb8-4793-b9fa-d29fa1d20b10"),
             DeviceId = Guid.Parse("01b1e96d-4bb8-4793-b9fa-d29fa1d20b10"),
             DeviceType = DeviceType.AppleTV,
             UserDeviceCode = new UserDeviceCode() {
                 Code = CodeGenerator.GetActivationCode(),
                 ExpirationDate = TimeHelper.GetExpirationDate(),
-                Id = Guid.Parse("ddc990b4-d7a7-4976-a3d5-71d47f96d2af")
-            }
+                Id = Guid.Parse("ddc990b4-d7a7-4976-a3d5-71d47f96d2af"),
+                UserDeviceId = Guid.Parse("01b1e96d-4bb8-4793-b9fa-d29fa1d20b10")
+            },
+            UserDeviceCodeId = Guid.Parse("ddc990b4-d7a7-4976-a3d5-71d47f96d2af")
         },
         new UserDevice() {
+            Id = Guid.Parse("4f931e15-3ad8-4a11-a1c9-67d45546d95d"),
             DeviceId = Guid.Parse("4f931e15-3ad8-4a11-a1c9-67d45546d95d"),
             DeviceType = DeviceType.AppleTV,
             UserDeviceCode = new UserDeviceCode() {
+                UserDeviceId = Guid.Parse("4f931e15-3ad8-4a11-a1c9-67d45546d95d"),
                 Code = CodeGenerator.GetActivationCode(),
                 ExpirationDate = TimeHelper.GetExpirationDate(),
                 Id = Guid.Parse("069847f7-cb49-46cb-927b-517e744bacd9")
-            }
+            },
+            UserDeviceCodeId = Guid.Parse("069847f7-cb49-46cb-927b-517e744bacd9")
         },
         new UserDevice() {
+            Id = Guid.Parse("c405c882-8c09-466a-9cc8-062b5467faf6"),
             DeviceId = Guid.Parse("c405c882-8c09-466a-9cc8-062b5467faf6"),
             DeviceType = DeviceType.AppleTV,
             UserDeviceCode = new UserDeviceCode() {
                 Code = CodeGenerator.GetActivationCode(),
                 ExpirationDate = TimeHelper.GetExpirationDate(),
-                Id = Guid.Parse("b877b9d1-0227-407f-911d-7f6c50bf412b")
-            }
+                Id = Guid.Parse("b877b9d1-0227-407f-911d-7f6c50bf412b"),
+                UserDeviceId = Guid.Parse("c405c882-8c09-466a-9cc8-062b5467faf6")
+            },
+            UserDeviceCodeId = Guid.Parse("c405c882-8c09-466a-9cc8-062b5467faf6")
         }
     };
 

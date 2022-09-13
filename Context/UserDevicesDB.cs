@@ -8,5 +8,6 @@ namespace UserDeviceApi.Context
         public UserDevicesDB(DbContextOptions<UserDevicesDB> options) : base(options) { }
         public DbSet<UserDeviceCode> UserDeviceCodes => Set<UserDeviceCode>();
         public DbSet<UserDevice> UserDevices => Set<UserDevice>();
+        public DbSet<User> Users => Set<User>();
     }
 }
