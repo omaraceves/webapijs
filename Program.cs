@@ -6,8 +6,8 @@ using UserDeviceApi.Model.RequestResponse;
 using UserDeviceApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
-builder.Services.AddDbContext<UserDevicesDB>(opt => opt.UseInMemoryDatabase("Activationdb"));
+//builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
+builder.Services.AddDbContext<UserDevicesDB>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("UserDevicesConnection")));
 builder.Services.AddTransient<UserDeviceService>();
 builder.Services.AddTransient<UserDeviceCodeService>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -150,8 +150,7 @@ app.MapGet("api/v1/codes/seed", async(UserDeviceService service) => {
                 ExpirationDate = TimeHelper.GetExpirationDate(),
                 Id = Guid.Parse("ddc990b4-d7a7-4976-a3d5-71d47f96d2af"),
                 UserDeviceId = Guid.Parse("01b1e96d-4bb8-4793-b9fa-d29fa1d20b10")
-            },
-            UserDeviceCodeId = Guid.Parse("ddc990b4-d7a7-4976-a3d5-71d47f96d2af")
+            }
         },
         new UserDevice() {
             Id = Guid.Parse("4f931e15-3ad8-4a11-a1c9-67d45546d95d"),
@@ -162,8 +161,7 @@ app.MapGet("api/v1/codes/seed", async(UserDeviceService service) => {
                 Code = CodeGenerator.GetActivationCode(),
                 ExpirationDate = TimeHelper.GetExpirationDate(),
                 Id = Guid.Parse("069847f7-cb49-46cb-927b-517e744bacd9")
-            },
-            UserDeviceCodeId = Guid.Parse("069847f7-cb49-46cb-927b-517e744bacd9")
+            }
         },
         new UserDevice() {
             Id = Guid.Parse("c405c882-8c09-466a-9cc8-062b5467faf6"),
@@ -174,8 +172,7 @@ app.MapGet("api/v1/codes/seed", async(UserDeviceService service) => {
                 ExpirationDate = TimeHelper.GetExpirationDate(),
                 Id = Guid.Parse("b877b9d1-0227-407f-911d-7f6c50bf412b"),
                 UserDeviceId = Guid.Parse("c405c882-8c09-466a-9cc8-062b5467faf6")
-            },
-            UserDeviceCodeId = Guid.Parse("c405c882-8c09-466a-9cc8-062b5467faf6")
+            }
         }
     };
 
@@ -186,47 +183,47 @@ app.MapGet("api/v1/codes/seed", async(UserDeviceService service) => {
 });
 
 #region TodoItems apis
-app.MapGet("/todoitems", async (TodoDb db) => 
-    await db.Todos.Select(todo => new TodoDto(todo)).ToListAsync());
-app.MapGet("/todoitems/complete", async (TodoDb db) => 
-    await db.Todos.Where(x => x.IsComplete)
-        .Select(todo => new TodoDto(todo)).ToListAsync());
-app.MapGet(idPath, async (int id, TodoDb db) => 
-    await db.Todos.FindAsync(id) is Todo todo ? Results.Ok(new TodoDto(todo)) : Results.NotFound());
-app.MapPost("/todoitems", async (TodoDto itemDto, TodoDb db) => {
-    var todoItem = new Todo() 
-    {
-        Id = itemDto.Id,
-        IsComplete = itemDto.IsComplete,
-        Name = itemDto.Name
-    };
+//app.MapGet("/todoitems", async (TodoDb db) => 
+//    await db.Todos.Select(todo => new TodoDto(todo)).ToListAsync());
+//app.MapGet("/todoitems/complete", async (TodoDb db) => 
+//    await db.Todos.Where(x => x.IsComplete)
+//        .Select(todo => new TodoDto(todo)).ToListAsync());
+//app.MapGet(idPath, async (int id, TodoDb db) => 
+//    await db.Todos.FindAsync(id) is Todo todo ? Results.Ok(new TodoDto(todo)) : Results.NotFound());
+//app.MapPost("/todoitems", async (TodoDto itemDto, TodoDb db) => {
+//    var todoItem = new Todo() 
+//    {
+//        Id = itemDto.Id,
+//        IsComplete = itemDto.IsComplete,
+//        Name = itemDto.Name
+//    };
 
-    db.Todos.Add(todoItem);
-    await db.SaveChangesAsync();
+//    db.Todos.Add(todoItem);
+//    await db.SaveChangesAsync();
 
-    return Results.Created($"/todoitems/{todoItem.Id}", new TodoDto(todoItem));
-});
-app.MapPut(idPath, async (int id, TodoDto item, TodoDb db) => {
-    var result = await db.Todos.FindAsync(id);
+//    return Results.Created($"/todoitems/{todoItem.Id}", new TodoDto(todoItem));
+//});
+//app.MapPut(idPath, async (int id, TodoDto item, TodoDb db) => {
+//    var result = await db.Todos.FindAsync(id);
 
-    if(result is null) return Results.NotFound();
+//    if(result is null) return Results.NotFound();
 
-    result.IsComplete = item.IsComplete;
-    result.Name = item.Name;
-    db.Update(result);
-    await db.SaveChangesAsync();
+//    result.IsComplete = item.IsComplete;
+//    result.Name = item.Name;
+//    db.Update(result);
+//    await db.SaveChangesAsync();
 
-    return Results.NoContent();
-});
-app.MapDelete(idPath, async (int id, TodoDb db) => {
-    var result = await db.Todos.FindAsync(id);
+//    return Results.NoContent();
+//});
+//app.MapDelete(idPath, async (int id, TodoDb db) => {
+//    var result = await db.Todos.FindAsync(id);
     
-    if(result is null) return Results.NotFound();
+//    if(result is null) return Results.NotFound();
 
-    db.Todos.Remove(result);
-    await db.SaveChangesAsync();
-    return Results.Ok(new TodoDto(result));
-});
+//    db.Todos.Remove(result);
+//    await db.SaveChangesAsync();
+//    return Results.Ok(new TodoDto(result));
+//});
 #endregion
 app.UseDefaultFiles();
 app.UseStaticFiles();
