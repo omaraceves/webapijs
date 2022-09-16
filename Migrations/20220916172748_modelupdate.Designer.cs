@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UserDeviceApi.Context;
 
@@ -11,9 +12,11 @@ using UserDeviceApi.Context;
 namespace UserDeviceApi.Migrations
 {
     [DbContext(typeof(UserDevicesDB))]
-    partial class UserDevicesDBModelSnapshot : ModelSnapshot
+    [Migration("20220916172748_modelupdate")]
+    partial class modelupdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
