@@ -6,17 +6,17 @@ using UserDeviceApi.Model.RequestResponse;
 using UserDeviceApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-//builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
-builder.Services.AddDbContext<UserDevicesDB>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("UserDevicesConnection")));
+builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
+builder.Services.AddDbContext<UserDevicesDB>(opt => opt.UseInMemoryDatabase("UserDevicesDB"));
+//builder.Services.AddDbContext<UserDevicesDB>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("UserDevicesConnection")));
 builder.Services.AddTransient<UserDeviceService>();
 builder.Services.AddTransient<UserDeviceCodeService>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
 var app = builder.Build();
 const string idPath = "/todoitems/{id}";
 
 //GET api/v1/userDevices/{deviceType}/{deviceId}
-app.MapGet("/api/v1/userDevices/{deviceType}/{deviceId}", async (Guid deviceId, DeviceType deviceType, 
+app.MapGet("/api/v1/userDevices/{deviceType}/{deviceId}"dot, async (Guid deviceId, DeviceType deviceType, 
     UserDeviceService service) => 
 {   
     UserDeviceResponse response;
