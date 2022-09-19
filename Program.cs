@@ -16,7 +16,7 @@ var app = builder.Build();
 const string idPath = "/todoitems/{id}";
 
 //GET api/v1/userDevices/{deviceType}/{deviceId}
-app.MapGet("/api/v1/userDevices/{deviceType}/{deviceId}"dot, async (Guid deviceId, DeviceType deviceType, 
+app.MapGet("/api/v1/userDevices/{deviceType}/{deviceId}",async (Guid deviceId, DeviceType deviceType, 
     UserDeviceService service) => 
 {   
     UserDeviceResponse response;
@@ -115,7 +115,9 @@ app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest requ
 
     //Update User Device
     result.UserDeviceCode.ExpirationDate = TimeHelper.GetUnixTime(); //Expire code now.
-    result.UserId = request.UserId;
+    
+    //todo fix activate
+    //result.UserId = request.UserId;
     service.Update(result);
 
     //recycle code

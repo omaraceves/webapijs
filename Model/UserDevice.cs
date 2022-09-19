@@ -7,7 +7,6 @@ namespace UserDeviceApi.Model
         public Guid Id { get; set; }
         public Guid DeviceId { get; set; }
         public DeviceType DeviceType { get; set; }
-        public Guid UserId { get; set; }
         public UserDeviceCode UserDeviceCode { get; set; }
         public User User { get; set; }
 
