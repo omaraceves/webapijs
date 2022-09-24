@@ -7,9 +7,9 @@ namespace UserDeviceApi.Model
         public Guid Id { get; set; }
         public Guid DeviceId { get; set; }
         public DeviceType DeviceType { get; set; }
-        public UserDeviceCode UserDeviceCode { get; set; }
         public Guid? UserId { get; set; }
         public User User { get; set; }
+        public List<UserDeviceCode> UserDeviceCodes { get; set; } = new();
 
         public UserDevice()
         {
@@ -18,7 +18,8 @@ namespace UserDeviceApi.Model
 
         public UserDevice(Guid deviceId, DeviceType deviceType, string code)
         {
-            UserDeviceCode = new UserDeviceCode(code);
+            var userDeviceCode = new UserDeviceCode(code);
+            UserDeviceCodes.Add(userDeviceCode);
             DeviceId = deviceId;
             DeviceType = deviceType;
         }
