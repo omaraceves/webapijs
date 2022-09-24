@@ -33,9 +33,9 @@ app.MapGet("/api/v1/userDevices/{deviceType}/{deviceId}",async (Guid deviceId, D
         response = new UserDeviceResponse(result, result.User);
         return Results.Ok(response);
     }
-    else if(result.UserDeviceCode != null)
+    else if(result.UserDeviceCodes.Any())
     {
-        response = new UserDeviceResponse(result, result.UserDeviceCode);
+        response = new UserDeviceResponse(result, result.UserDeviceCodes.First());
         return Results.Ok(response);
     }
 

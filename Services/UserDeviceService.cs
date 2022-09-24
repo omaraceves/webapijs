@@ -17,9 +17,10 @@ namespace UserDeviceApi.Services
         public IQueryable<UserDevice> GetUserDevices()
         {
             var result = _context.UserDevices
-                .Include(x => x.UserDeviceCode)
+                .Include(x => x.UserDeviceCodes
+                                .Where(code => TimeHelper.GetUnixTime() < code.ExpirationDate)
+                                 .OrderByDescending(code => code.ExpirationDate))
                 .Include(x => x.User)
-                .Where(x => x.UserDeviceCode.ExpirationDate <= TimeHelper.GetUnixTime())
                 .AsQueryable();
 
             return result;
