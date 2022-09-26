@@ -89,16 +89,18 @@ app.MapPut("/api/v1/userDevices/{deviceType}/{deviceId}", async (
 
     if (result == null)
         return Results.NotFound();
-    
+
     //refresh code
-    var oldCode = result.UserDeviceCode.Code;
+
     var code = CodeGenerator.GetActivationCode();
-    result.UserDeviceCode.Code = code;
-    result.UserDeviceCode.ExpirationDate = TimeHelper.GetExpirationDate();
+    var userDeviceCode = new UserDeviceCode(code);
+    result.UserDeviceCodes.Add(userDeviceCode);
     service.Update(result);
 
     //recycle code
-    CodeGenerator.PushCode(oldCode);
+    //CodeGenerator.PushCode(oldCode);
+    //let another process to handle this
+    //not immediately handling a code could expose a vulnerability where a user 
 
     return Results.NoContent();
 });
@@ -107,21 +109,23 @@ app.MapPut("/api/v1/userDevices/{deviceType}/{deviceId}", async (
 app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest request, UserDeviceService service) => {
     
     var result = await service.GetUserDevices()
-    .FirstOrDefaultAsync(x => x.UserDeviceCode.Code == request.Code);
+    .FirstOrDefaultAsync(x => x.UserDeviceCodes.Any(y => y.Code == request.Code));
 
     //What to do when resource already exists? Conflict 409 code.
     if (result == null)
         return Results.NotFound();
 
     //Update User Device
-    result.UserDeviceCode.ExpirationDate = TimeHelper.GetUnixTime(); //Expire code now.
+    var userDevice = result.UserDeviceCodes.First(x => x.Code == request.Code);
+    userDevice.ExpirationDate = TimeHelper.GetUnixTime(); //Expire code now.
     
     //todo fix activate
     //result.UserId = request.UserId;
     service.Update(result);
 
     //recycle code
-    CodeGenerator.PushCode(result.UserDeviceCode.Code);
+    //This auto recycle might be wrong
+    CodeGenerator.PushCode(userDevice.Code);
 
     return Results.Ok(new UserDeviceResponse(result));
 });
@@ -141,40 +145,40 @@ app.MapGet("api/v1/codes/recycle", async(UserDeviceCodeService service) => {
 
 //GET api/v1/codes/seed
 app.MapGet("api/v1/codes/seed", async(UserDeviceService service) => {
-    
+
     var userDevicesToAdd = new List<UserDevice>() {
         new UserDevice() {
             Id = Guid.Parse("01b1e96d-4bb8-4793-b9fa-d29fa1d20b10"),
             DeviceId = Guid.Parse("01b1e96d-4bb8-4793-b9fa-d29fa1d20b10"),
             DeviceType = DeviceType.AppleTV,
-            UserDeviceCode = new UserDeviceCode() {
+            UserDeviceCodes = new List<UserDeviceCode>(){ new UserDeviceCode() {
                 Code = CodeGenerator.GetActivationCode(),
                 ExpirationDate = TimeHelper.GetExpirationDate(),
                 Id = Guid.Parse("ddc990b4-d7a7-4976-a3d5-71d47f96d2af"),
                 UserDeviceId = Guid.Parse("01b1e96d-4bb8-4793-b9fa-d29fa1d20b10")
-            }
+            } }
         },
         new UserDevice() {
             Id = Guid.Parse("4f931e15-3ad8-4a11-a1c9-67d45546d95d"),
             DeviceId = Guid.Parse("4f931e15-3ad8-4a11-a1c9-67d45546d95d"),
             DeviceType = DeviceType.AppleTV,
-            UserDeviceCode = new UserDeviceCode() {
+            UserDeviceCodes = new List<UserDeviceCode>(){ new UserDeviceCode() {
                 UserDeviceId = Guid.Parse("4f931e15-3ad8-4a11-a1c9-67d45546d95d"),
                 Code = CodeGenerator.GetActivationCode(),
                 ExpirationDate = TimeHelper.GetExpirationDate(),
                 Id = Guid.Parse("069847f7-cb49-46cb-927b-517e744bacd9")
-            }
+            } }
         },
         new UserDevice() {
             Id = Guid.Parse("c405c882-8c09-466a-9cc8-062b5467faf6"),
             DeviceId = Guid.Parse("c405c882-8c09-466a-9cc8-062b5467faf6"),
             DeviceType = DeviceType.AppleTV,
-            UserDeviceCode = new UserDeviceCode() {
+            UserDeviceCodes = new List<UserDeviceCode>(){ new UserDeviceCode() {
                 Code = CodeGenerator.GetActivationCode(),
                 ExpirationDate = TimeHelper.GetExpirationDate(),
                 Id = Guid.Parse("b877b9d1-0227-407f-911d-7f6c50bf412b"),
                 UserDeviceId = Guid.Parse("c405c882-8c09-466a-9cc8-062b5467faf6")
-            }
+            } }
         }
     };
 
