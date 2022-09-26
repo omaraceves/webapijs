@@ -7,8 +7,8 @@ using UserDeviceApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
-//builder.Services.AddDbContext<UserDevicesDB>(opt => opt.UseInMemoryDatabase("UserDevicesDB"));
-builder.Services.AddDbContext<UserDevicesDB>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("UserDevicesConnection")));
+builder.Services.AddDbContext<UserDevicesDB>(opt => opt.UseInMemoryDatabase("UserDevicesDB"));
+//builder.Services.AddDbContext<UserDevicesDB>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("UserDevicesConnection")));
 builder.Services.AddTransient<UserDeviceService>();
 builder.Services.AddTransient<UserDeviceCodeService>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
