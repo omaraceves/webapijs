@@ -90,17 +90,14 @@ app.MapPut("/api/v1/userDevices/{deviceType}/{deviceId}", async (
     if (result == null)
         return Results.NotFound();
 
-    //refresh code
+    //expire current code so it can be recycled
+    result.UserDeviceCodes[0].ExpirationDate = TimeHelper.GetUnixTime();
 
+    //refresh code
     var code = CodeGenerator.GetActivationCode();
     var userDeviceCode = new UserDeviceCode(code);
     result.UserDeviceCodes.Add(userDeviceCode);
     service.Update(result);
-
-    //recycle code
-    //CodeGenerator.PushCode(oldCode);
-    //let another process to handle this
-    //not immediately handling a code could expose a vulnerability where a user 
 
     return Results.NoContent();
 });
