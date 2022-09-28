@@ -36,6 +36,7 @@ namespace UserDeviceApi.Helpers
             _codeQueue.Enqueue("YYYV");
             _codeQueue.Enqueue("YYYC");
             _codeQueue.Enqueue("YYYC");
+            _codeQueue.Enqueue("YYYD");
         }
 
         public static string GetActivationCode()
