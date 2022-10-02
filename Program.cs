@@ -75,7 +75,7 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDeviceSe
     await service.AddAsync(userDevice);
     response = new UserDeviceResponse(userDevice);
 
-    return Results.Created($"api/v1/userDevices?deviceId={request.DeviceId}&deviceType={request.DeviceType}", 
+    return Results.Created($"api/v1/userDevices/{request.DeviceId}/{request.DeviceType}", 
     response);
 });
 
