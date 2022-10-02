@@ -80,8 +80,7 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDeviceSe
 });
 
 //PUT api/v1/userDevices/{deviceType}/{deviceId}
-app.MapPut("/api/v1/userDevices/{deviceType}/{deviceId}", async (
-    Guid deviceId, DeviceType deviceType, UserDeviceRequest request, UserDeviceService service) => 
+app.MapPut("/api/v1/userDevices", async (UserDeviceRequest request, UserDeviceService service) => 
 {
     var result = await service.GetUserDevices()
     .FirstOrDefaultAsync(x => x.DeviceId == request.DeviceId 
