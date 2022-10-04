@@ -142,6 +142,13 @@ app.MapGet("api/v1/codes/recycle", async(UserDeviceCodeService service) => {
 //GET api/v1/codes/seed
 app.MapGet("api/v1/codes/seed", async(UserDeviceService service) => {
 
+    var seedIds = new List<Guid> { Guid.Parse("01b1e96d-4bb8-4793-b9fa-d29fa1d20b10"),
+        Guid.Parse("4f931e15-3ad8-4a11-a1c9-67d45546d95d"), 
+        Guid.Parse("c405c882-8c09-466a-9cc8-062b5467faf6") };
+
+    if (service.GetAll().Where(x => seedIds.Contains(x.Id)).Any())
+        return Results.Ok("DB was already seeded.");
+
     var userDevicesToAdd = new List<UserDevice>() {
         new UserDevice() {
             Id = Guid.Parse("01b1e96d-4bb8-4793-b9fa-d29fa1d20b10"),

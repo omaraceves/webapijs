@@ -14,7 +14,7 @@ namespace UserDeviceApi.Helpers
         public static long GetExpirationDate()
         {
             var now = GetUnixTime();
-            var expirationDate = now =+ 3600; //1 hour
+            var expirationDate = now += 3600; //1 hour
 
             return expirationDate;
         }
