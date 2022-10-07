@@ -191,6 +191,37 @@ app.MapGet("api/v1/codes/seed", async(UserDeviceService service) => {
     return Results.Ok(results);
 });
 
+app.MapGet("api/v1/users/seed", async (UserDevicesDB context) => {
+
+    var seedIds = new List<Guid> { Guid.Parse("cef45d4c-b4b9-4e36-bcf0-04b2ff042a8f"),
+        Guid.Parse("7d86c22c-cafe-4331-a6f3-bc090a9f7d9c"),
+        Guid.Parse("b4252290-5fc1-441e-8e14-f54af575bde3") };
+
+    if (context.Users.Where(x => seedIds.Contains(x.Id)).Any())
+        return Results.Ok("DB was already seeded.");
+
+    var userDevicesToAdd = new List<User>() {
+        new User() {
+            Id = Guid.Parse("cef45d4c-b4b9-4e36-bcf0-04b2ff042a8f"),
+            UserName = "user1"
+        },
+        new User() {
+            Id = Guid.Parse("7d86c22c-cafe-4331-a6f3-bc090a9f7d9c"),
+            UserName = "user2"
+        },
+        new User() {
+            Id = Guid.Parse("b4252290-5fc1-441e-8e14-f54af575bde3"),
+            UserName = "user3"
+        }
+    };
+
+    await context.Users.AddRangeAsync(userDevicesToAdd);
+    await context.SaveChangesAsync();
+
+    var results = context.Users;
+    return Results.Ok(results);
+});
+
 #region TodoItems apis
 //app.MapGet("/todoitems", async (TodoDb db) => 
 //    await db.Todos.Select(todo => new TodoDto(todo)).ToListAsync());
@@ -226,7 +257,7 @@ app.MapGet("api/v1/codes/seed", async(UserDeviceService service) => {
 //});
 //app.MapDelete(idPath, async (int id, TodoDb db) => {
 //    var result = await db.Todos.FindAsync(id);
-    
+
 //    if(result is null) return Results.NotFound();
 
 //    db.Todos.Remove(result);
