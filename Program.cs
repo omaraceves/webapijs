@@ -56,6 +56,12 @@ app.MapGet("/api/v1/userDevices", async (UserDeviceService service) =>
     return Results.Ok(result);
 });
 
+//GET api/v1/users
+app.MapGet("/api/v1/users", async (UserDevicesDB context) =>
+{
+    return Results.Ok(context.Users);
+});
+
 //POST api/v1/userDevices
 app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDeviceService service) => {
     UserDeviceResponse response;
@@ -79,7 +85,7 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDeviceSe
     response);
 });
 
-//PUT api/v1/userDevices/{deviceType}/{deviceId}
+//PUT api/v1/userDevices
 app.MapPut("/api/v1/userDevices", async (UserDeviceRequest request, UserDeviceService service) => 
 {
     var result = await service.GetUserDevices()
@@ -104,6 +110,7 @@ app.MapPut("/api/v1/userDevices", async (UserDeviceRequest request, UserDeviceSe
 //POST api/v1/userDevices/register
 app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest request, UserDeviceService service) => {
     
+    //todo: fix register
     var result = await service.GetUserDevices()
     .FirstOrDefaultAsync(x => x.UserDeviceCodes.Any(y => y.Code == request.Code));
 
