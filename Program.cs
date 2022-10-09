@@ -109,8 +109,7 @@ app.MapPut("/api/v1/userDevices", async (UserDeviceRequest request, UserDeviceSe
 
 //POST api/v1/userDevices/register
 app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest request, UserDeviceService service) => {
-    
-    //todo: fix register
+
     var result = await service.GetUserDevices()
     .FirstOrDefaultAsync(x => x.UserDeviceCodes.Any(y => y.Code == request.Code));
 
@@ -118,19 +117,17 @@ app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest requ
     if (result == null)
         return Results.NotFound();
 
-    //Update User Device
+    //Gets user device
     var userDevice = result.UserDeviceCodes.First(x => x.Code == request.Code);
-    userDevice.ExpirationDate = TimeHelper.GetUnixTime(); //Expire code now.
     
-    //todo fix activate
-    //result.UserId = request.UserId;
-    service.Update(result);
+    //Expire code so it can be recycled
+    userDevice.ExpirationDate = TimeHelper.GetUnixTime();
+    
+    //Set userId
+    result.UserId = request.UserId;
+    result = service.Update(result);
 
-    //recycle code
-    //This auto recycle might be wrong
-    CodeGenerator.PushCode(userDevice.Code);
-
-    return Results.Ok(new UserDeviceResponse(result));
+    return Results.Ok(new UserDeviceResponse(result, result.User));
 });
 
 //GET api/v1/codes/recycle
