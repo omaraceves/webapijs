@@ -62,24 +62,25 @@ app.MapGet("/api/v1/users", async (UserDevicesDB context) =>
     return Results.Ok(context.Users);
 });
 
+//Todo test create
 //POST api/v1/userDevices
 app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDeviceService service) => {
     UserDeviceResponse response;
 
-    var result = await service.GetUserDevices()
+    var result = await service.GetAll()
     .FirstOrDefaultAsync(x => x.DeviceId == request.DeviceId 
                             && x.DeviceType == request.DeviceType);
 
     //What to do when resource already exists? Conflict 409 code.
     if (result != null)
-        return Results.Conflict(new UserDeviceResponse(result));
+        return Results.Conflict("Device already exists");
 
     //To create a userDevice, first we need a new code.
     var code = CodeGenerator.GetActivationCode();
     var userDevice = new UserDevice(request.DeviceId, request.DeviceType, code);
 
     await service.AddAsync(userDevice);
-    response = new UserDeviceResponse(userDevice);
+    response = new UserDeviceResponse(userDevice, userDevice.UserDeviceCodes.FirstOrDefault());
 
     return Results.Created($"api/v1/userDevices/{request.DeviceId}/{request.DeviceType}", 
     response);
@@ -88,7 +89,7 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDeviceSe
 //PUT api/v1/userDevices
 app.MapPut("/api/v1/userDevices", async (UserDeviceRequest request, UserDeviceService service) => 
 {
-    var result = await service.GetUserDevices()
+    var result = await service.GetAll()
     .FirstOrDefaultAsync(x => x.DeviceId == request.DeviceId 
                             && x.DeviceType == request.DeviceType);
 
@@ -102,6 +103,23 @@ app.MapPut("/api/v1/userDevices", async (UserDeviceRequest request, UserDeviceSe
     var code = CodeGenerator.GetActivationCode();
     var userDeviceCode = new UserDeviceCode(code);
     result.UserDeviceCodes.Add(userDeviceCode);
+    service.Update(result);
+
+    return Results.NoContent();
+});
+
+//PUT api/v1/userDevices/expire
+app.MapPut("/api/v1/userDevices", async (UserDeviceRequest request, UserDeviceService service) =>
+{
+    var result = await service.GetAll()
+    .FirstOrDefaultAsync(x => x.DeviceId == request.DeviceId
+                            && x.DeviceType == request.DeviceType);
+
+    if (result == null)
+        return Results.NotFound();
+
+    //expire current code so it can be recycled
+    result.UserDeviceCodes[0].ExpirationDate = TimeHelper.GetUnixTime();
     service.Update(result);
 
     return Results.NoContent();
