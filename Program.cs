@@ -118,10 +118,10 @@ app.MapPost("/api/v1/userDevices/register", async(UserDeviceRegisterRequest requ
         return Results.NotFound();
 
     //Gets user device
-    var userDevice = result.UserDeviceCodes.First(x => x.Code == request.Code);
-    
+    var userDeviceCode = result.UserDeviceCodes.First(x => x.Code == request.Code);
+
     //Expire code so it can be recycled
-    userDevice.ExpirationDate = TimeHelper.GetUnixTime();
+    userDeviceCode.ExpirationDate = TimeHelper.GetUnixTime();
     
     //Set userId
     result.UserId = request.UserId;
