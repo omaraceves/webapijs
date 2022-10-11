@@ -90,6 +90,7 @@ app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDeviceSe
 app.MapPut("/api/v1/userDevices", async (UserDeviceRequest request, UserDeviceService service) => 
 {
     var result = await service.GetAll()
+    .Include(x => x.UserDeviceCodes.OrderByDescending(code => code.ExpirationDate))
     .FirstOrDefaultAsync(x => x.DeviceId == request.DeviceId 
                             && x.DeviceType == request.DeviceType);
 
@@ -97,7 +98,8 @@ app.MapPut("/api/v1/userDevices", async (UserDeviceRequest request, UserDeviceSe
         return Results.NotFound();
 
     //expire current code so it can be recycled
-    result.UserDeviceCodes[0].ExpirationDate = TimeHelper.GetUnixTime();
+    if (result.UserDeviceCodes[0] != null)
+        result.UserDeviceCodes[0].ExpirationDate = TimeHelper.GetUnixTime();
 
     //refresh code
     var code = CodeGenerator.GetActivationCode();
@@ -108,8 +110,9 @@ app.MapPut("/api/v1/userDevices", async (UserDeviceRequest request, UserDeviceSe
     return Results.NoContent();
 });
 
+//Todo text expired codes.
 //PUT api/v1/userDevices/expire
-app.MapPut("/api/v1/userDevices", async (UserDeviceRequest request, UserDeviceService service) =>
+app.MapPut("/api/v1/userDevices/expire", async (UserDeviceRequest request, UserDeviceService service) =>
 {
     var result = await service.GetAll()
     .FirstOrDefaultAsync(x => x.DeviceId == request.DeviceId
