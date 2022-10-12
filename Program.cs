@@ -110,11 +110,12 @@ app.MapPut("/api/v1/userDevices", async (UserDeviceRequest request, UserDeviceSe
     return Results.NoContent();
 });
 
-//Todo text expired codes.
+//Todo test expired codes
 //PUT api/v1/userDevices/expire
 app.MapPut("/api/v1/userDevices/expire", async (UserDeviceRequest request, UserDeviceService service) =>
 {
     var result = await service.GetAll()
+    .Include(x => x.UserDeviceCodes.OrderByDescending(code => code.ExpirationDate))
     .FirstOrDefaultAsync(x => x.DeviceId == request.DeviceId
                             && x.DeviceType == request.DeviceType);
 
@@ -122,9 +123,14 @@ app.MapPut("/api/v1/userDevices/expire", async (UserDeviceRequest request, UserD
         return Results.NotFound();
 
     //expire current code so it can be recycled
+    if (result.UserDeviceCodes[0] == null)
+    {
+        return Results.NotFound();
+        
+    }
+
     result.UserDeviceCodes[0].ExpirationDate = TimeHelper.GetUnixTime();
     service.Update(result);
-
     return Results.NoContent();
 });
 
