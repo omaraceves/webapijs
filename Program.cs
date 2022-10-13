@@ -62,7 +62,6 @@ app.MapGet("/api/v1/users", async (UserDevicesDB context) =>
     return Results.Ok(context.Users);
 });
 
-//Todo test create
 //POST api/v1/userDevices
 app.MapPost("/api/v1/userDevices", async(UserDeviceRequest request, UserDeviceService service) => {
     UserDeviceResponse response;
@@ -110,7 +109,6 @@ app.MapPut("/api/v1/userDevices", async (UserDeviceRequest request, UserDeviceSe
     return Results.NoContent();
 });
 
-//Todo test expired codes
 //PUT api/v1/userDevices/expire
 app.MapPut("/api/v1/userDevices/expire", async (UserDeviceRequest request, UserDeviceService service) =>
 {

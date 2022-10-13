@@ -1,0 +1,14 @@
+﻿
+Get Devices
+
+UC_001 - When Get UserDevices by Id, UserDevice should be returned.
+UC_001_TC_001 - User Device should be returned when exists.
+UC_001_TC_002 - 404 should be returned if userDevice doesn't exists.
+UC_001_TC_003 - Code should not be null or empty if a not expired user device code exists.
+UC_001_TC_004 - User should be empty if a not expired user device code exists.
+UC_001_TC_005 - User should be returned if userId is not null or empty for given userDevice.
+UC_001_TC_006 - Code should be always empty if userId exists.
+
+This makes me wonder if I should separate devices from registeredDevices to avoid the confusion.
+
+
